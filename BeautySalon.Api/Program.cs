@@ -6,6 +6,7 @@ using BeautySalon.Infrastructure.Persistence;
 using BeautySalon.Infrastructure.Repositories;
 using BeautySalon.Infrastructure.Analytics;
 using BeautySalon.Infrastructure.Reports;
+using BeautySalon.Infrastructure.EventGeneration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -17,13 +18,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddMemoryCache(); // ← ДОБАВЛЕНО для кэширования
+
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
 builder.Services.AddSingleton<JwtTokenFactory>();
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<ReportsService>();          // ← ДОБАВЛЕНО
-builder.Services.AddSingleton<CsvReportGenerator>();   // ← ДОБАВЛЕНО
+builder.Services.AddScoped<ReportsService>();
+builder.Services.AddSingleton<CsvReportGenerator>();
+builder.Services.AddScoped<AppointmentGenerator>(); // ← ДОБАВЛЕНО для генератора
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

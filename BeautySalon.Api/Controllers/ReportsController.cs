@@ -16,7 +16,7 @@ public class ReportsController : ControllerBase
         _reportsService = reportsService;
     }
 
-    [HttpGet("events.csv")]
+    [HttpGet("appointments.csv")]
     public async Task<IActionResult> GetEventsCsv(CancellationToken ct)
     {
         var bytes = await _reportsService.BuildEventsCsvAsync(ct);
